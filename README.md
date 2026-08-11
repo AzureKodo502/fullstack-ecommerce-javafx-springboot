@@ -22,7 +22,7 @@ L'obiettivo principale di questo progetto era progettare un sistema software sca
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
 | **Login & Auth** | **Catalogo Prodotti** |
 |:---:|:---:|
