@@ -1,10 +1,12 @@
 # 🛒 E-Commerce Desktop Application – Full Stack Java Project
 
+[![CI](https://github.com/AzureKodo502/fullstack-ecommerce-javafx-springboot/actions/workflows/ci.yml/badge.svg)](https://github.com/AzureKodo502/fullstack-ecommerce-javafx-springboot/actions/workflows/ci.yml)
 ![Java](https://img.shields.io/badge/Java-21-blue)
 ![Spring Boot](https://img.shields.io/badge/SpringBoot-4.0.2-brightgreen)
 ![JavaFX](https://img.shields.io/badge/JavaFX-UI-orange)
 ![Architecture](https://img.shields.io/badge/Architecture-MVC-blueviolet)
 ![API](https://img.shields.io/badge/API-REST-success)
+![Tests](https://img.shields.io/badge/Tests-53%20passing-success)
 ![Database](https://img.shields.io/badge/Database-H2-lightgrey)
 ![Status](https://img.shields.io/badge/Status-Completed-success)
 ![Project Type](https://img.shields.io/badge/Project-Portfolio-informational)
@@ -109,7 +111,7 @@ The application follows a layered architecture both on frontend and backend.
 
 ###  Authentication
 - User registration
-- Secure login system
+- Login with server-side password hashing (BCrypt + salt)
 - Session management
 
 ---
@@ -148,6 +150,25 @@ The application follows a layered architecture both on frontend and backend.
 The backend uses an H2 file-based database that persists data between application restarts.
 
 The database is automatically populated through a CommandLineRunner script that prevents duplicate entries.
+
+---
+
+## 🧪 Testing
+
+The **Backend** module is covered by **53 automated tests** (JUnit 5 + Mockito), organized across the three architectural layers:
+
+| Layer | Technique | What it checks |
+|---|---|---|
+| **Service** | Mockito (`@ExtendWith(MockitoExtension.class)`) | Isolated business logic: email uniqueness, BCrypt hashing, cart quantity merge, order total, error paths |
+| **REST Controller** | `@WebMvcTest` + `MockMvc` | Routing, JSON (de)serialization, status codes (200 / 400 / 401) — without starting the server |
+| **Repository** | `@DataJpaTest` + in-memory H2 | Derived and custom queries (`findByNomeContainingIgnoreCase`, `findByUserAndScarpaAndTaglia`, `@Modifying` DELETE), `unique` constraint |
+
+Every push and every Pull Request runs the full suite via **GitHub Actions** (see badge at the top).
+
+```bash
+# run the tests locally (Backend/ folder)
+./mvnw test
+```
 
 ---
 

@@ -1,11 +1,13 @@
 
 # 🛒 E-Commerce Desktop Application – Full Stack Java Project
 
+[![CI](https://github.com/AzureKodo502/fullstack-ecommerce-javafx-springboot/actions/workflows/ci.yml/badge.svg)](https://github.com/AzureKodo502/fullstack-ecommerce-javafx-springboot/actions/workflows/ci.yml)
 ![Java](https://img.shields.io/badge/Java-21-blue)
 ![Spring Boot](https://img.shields.io/badge/SpringBoot-4.0.2-brightgreen)
 ![JavaFX](https://img.shields.io/badge/JavaFX-UI-orange)
 ![Architecture](https://img.shields.io/badge/Architettura-MVC-blueviolet)
 ![API](https://img.shields.io/badge/API-REST-success)
+![Tests](https://img.shields.io/badge/Test-53%20passing-success)
 ![Database](https://img.shields.io/badge/Database-H2-lightgrey)
 ![Status](https://img.shields.io/badge/Stato-Completato-success)
 ![Project Type](https://img.shields.io/badge/Proggetto-Portfolio-informational)
@@ -112,7 +114,7 @@ L'applicazione segue un'architettura a strati sia nel frontend che nel backend.
 
 ###  Autenticazione
 - Registrazione Utente
-- Sistema login sicuro
+- Login con password cifrate lato server (BCrypt + salt)
 - Gestione sessione
 
 ---
@@ -151,6 +153,25 @@ L'applicazione segue un'architettura a strati sia nel frontend che nel backend.
 Il backend utilizza un database H2 basato su file che mantiene i dati tra i riavvii dell’applicazione.
 
 Il database viene popolato automaticamente tramite uno script CommandLineRunner che previene duplicazioni di dati.
+
+---
+
+## 🧪 Testing
+
+Il modulo **Backend** è coperto da **53 test** automatici (JUnit 5 + Mockito), organizzati sui tre livelli dell'architettura:
+
+| Livello | Tecnica | Cosa verifica |
+|---|---|---|
+| **Service** | Mockito (`@ExtendWith(MockitoExtension.class)`) | Logica di business isolata: unicità email, hashing BCrypt, merge quantità nel carrello, calcolo totale ordine, rami di errore |
+| **Controller REST** | `@WebMvcTest` + `MockMvc` | Routing, (de)serializzazione JSON, status code (200 / 400 / 401) — senza avviare il server |
+| **Repository** | `@DataJpaTest` + H2 in memoria | Query derivate e custom (`findByNomeContainingIgnoreCase`, `findByUserAndScarpaAndTaglia`, DELETE `@Modifying`), vincolo `unique` |
+
+Ogni push e ogni Pull Request eseguono l'intera suite tramite **GitHub Actions** (vedi badge in cima).
+
+```bash
+# eseguire i test in locale (cartella Backend/)
+./mvnw test
+```
 
 ---
 
