@@ -34,6 +34,8 @@ build/
 
 ### CUSTOM - StrideStyle ###
 /data/
+data/
+**/data/
 *.db
 *.log
 /logs/
