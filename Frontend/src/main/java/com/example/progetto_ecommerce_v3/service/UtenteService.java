@@ -5,16 +5,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class UtenteService {
 
-    // Ritorna l'oggetto Utente se login OK, altrimenti null
-    public CompletableFuture<Utente> login(String email, String password) {
+    // Ritorna utente + token JWT se login OK, altrimenti null
+    public CompletableFuture<AuthResult> login(String email, String password) {
         // Creiamo il JSON per la richiesta
         String jsonBody = String.format("{\"email\":\"%s\", \"password\":\"%s\"}", email, password);
 
         return ApiClient.getInstance().post("/auth/login", jsonBody)
-                .thenApply(responseJson -> {
-                    // Se la risposta è vuota o errore, parseUtente ritorna null
-                    return JsonParser.parseUtente(responseJson);
-                })
+                .thenApply(UtenteService::parseAuthResult)
                 .exceptionally(e -> {
                     e.printStackTrace();
                     return null;
@@ -22,14 +19,22 @@ public class UtenteService {
     }
 
     // Registrazione
-    public CompletableFuture<Utente> registrazione(String nome, String cognome, String email, String password) {
+    public CompletableFuture<AuthResult> registrazione(String nome, String cognome, String email, String password) {
         String jsonBody = String.format(
                 "{\"nome\":\"%s\", \"cognome\":\"%s\", \"email\":\"%s\", \"password\":\"%s\"}",
                 nome, cognome, email, password
         );
 
         return ApiClient.getInstance().post("/auth/register", jsonBody)
-                .thenApply(JsonParser::parseUtente)
+                .thenApply(UtenteService::parseAuthResult)
                 .exceptionally(e -> null);
+    }
+
+    // Il backend risponde con {"token":"...","user":{...}}: se manca l'utente
+    // la richiesta è fallita (credenziali errate, email già in uso, ecc.).
+    private static AuthResult parseAuthResult(String responseJson) {
+        Utente utente = JsonParser.parseUtente(responseJson);
+        if (utente == null) return null;
+        return new AuthResult(utente, JsonParser.parseToken(responseJson));
     }
 }

@@ -49,13 +49,13 @@ public class LoginController {
 
         // CHIAMATA AL BACKEND
         utenteService.login(email, pass)
-                .thenAccept(utente -> {
+                .thenAccept(risultato -> {
                     Platform.runLater(() -> {
-                        if (utente != null) {
+                        if (risultato != null) {
                             try {
-                                // Salviamo l'utente in sessione se il login è riuscito
-                                SessionManager.getInstance().Login(utente);
-                                System.out.println("Login OK: " + utente.Nome() + " (ID: " + utente.Id() + ")");
+                                // Salviamo utente e token JWT in sessione se il login è riuscito
+                                SessionManager.getInstance().Login(risultato.utente(), risultato.token());
+                                System.out.println("Login OK: " + risultato.utente().Nome() + " (ID: " + risultato.utente().Id() + ")");
 
                                 // Vai alla Home
                                 SceneHandler.getInstance().loadHomeWindow();

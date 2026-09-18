@@ -3,6 +3,7 @@ package com.ecommerce.backend.controller;
 import com.ecommerce.backend.dto.LoginRequest;
 import com.ecommerce.backend.dto.RegisterRequest;
 import com.ecommerce.backend.model.User;
+import com.ecommerce.backend.security.JwtService;
 import com.ecommerce.backend.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -20,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Test dello strato web di {@link AuthController} con MockMvc: il service è
- * sostituito da un mock, si verificano status HTTP, mapping JSON e la
- * traduzione delle eccezioni di business in 400 / 401.
+ * sostituito da un mock, si verificano status HTTP, mapping JSON (token +
+ * dati utente) e la traduzione delle eccezioni di business in 400 / 401.
  */
 @WebMvcTest(AuthController.class)
 class AuthControllerTest {
@@ -32,13 +34,17 @@ class AuthControllerTest {
     @MockitoBean
     private AuthService authService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
     @Test
-    void register_ritorna200EUtenteCreato() throws Exception {
+    void register_ritorna200ConTokenEUtenteCreato() throws Exception {
         User user = new User();
         user.setId(1L);
         user.setNome("Mario");
         user.setEmail("mario@example.com");
         when(authService.register(any(RegisterRequest.class))).thenReturn(user);
+        when(jwtService.generateToken(anyLong())).thenReturn("fake-jwt-token");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -46,8 +52,10 @@ class AuthControllerTest {
                                 {"nome":"Mario","cognome":"Rossi","email":"mario@example.com","password":"secret"}
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nome").value("Mario"))
-                .andExpect(jsonPath("$.email").value("mario@example.com"));
+                .andExpect(jsonPath("$.token").value("fake-jwt-token"))
+                .andExpect(jsonPath("$.user.nome").value("Mario"))
+                .andExpect(jsonPath("$.user.email").value("mario@example.com"))
+                .andExpect(jsonPath("$.user.password").doesNotExist());
     }
 
     @Test
@@ -65,11 +73,12 @@ class AuthControllerTest {
     }
 
     @Test
-    void login_ritorna200EUtente_quandoCredenzialiValide() throws Exception {
+    void login_ritorna200ConTokenEUtente_quandoCredenzialiValide() throws Exception {
         User user = new User();
         user.setId(1L);
         user.setEmail("mario@example.com");
         when(authService.login(any(LoginRequest.class))).thenReturn(user);
+        when(jwtService.generateToken(anyLong())).thenReturn("fake-jwt-token");
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -77,7 +86,8 @@ class AuthControllerTest {
                                 {"email":"mario@example.com","password":"secret"}
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("mario@example.com"));
+                .andExpect(jsonPath("$.token").value("fake-jwt-token"))
+                .andExpect(jsonPath("$.user.email").value("mario@example.com"));
     }
 
     @Test

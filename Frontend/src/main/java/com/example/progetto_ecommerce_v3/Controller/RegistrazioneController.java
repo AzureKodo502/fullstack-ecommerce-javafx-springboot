@@ -79,13 +79,13 @@ public class RegistrazioneController {
 
         // 2. CHIAMATA AL SERVICE (Passiamo solo i 4 dati che servono al backend)
         utenteService.registrazione(nome, cognome, email, pass)
-                .thenAccept(utente -> {
+                .thenAccept(risultato -> {
                     Platform.runLater(() -> {
-                        if (utente != null) {
+                        if (risultato != null) {
                             try {
-                                // Effettuiamo il Login automatico nella sessione
-                                SessionManager.getInstance().Login(utente);
-                                System.out.println("Registrazione OK: " + utente.Email());
+                                // Effettuiamo il Login automatico nella sessione (utente + token JWT)
+                                SessionManager.getInstance().Login(risultato.utente(), risultato.token());
+                                System.out.println("Registrazione OK: " + risultato.utente().Email());
 
                                 // Andiamo alla Home
                                 SceneHandler.getInstance().loadHomeWindow();

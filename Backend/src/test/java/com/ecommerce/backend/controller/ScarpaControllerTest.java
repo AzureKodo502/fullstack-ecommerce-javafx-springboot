@@ -1,6 +1,7 @@
 package com.ecommerce.backend.controller;
 
 import com.ecommerce.backend.model.Scarpa;
+import com.ecommerce.backend.security.JwtService;
 import com.ecommerce.backend.service.ScarpaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,12 @@ class ScarpaControllerTest {
 
     @MockitoBean
     private ScarpaService scarpaService;
+
+    // Il contesto di sicurezza carica comunque JwtAuthenticationFilter (che dipende
+    // da JwtService); qui non serve stub perché gli endpoint /api/products/** sono
+    // pubblici, ma il bean deve esistere perché il contesto Spring parta.
+    @MockitoBean
+    private JwtService jwtService;
 
     @Test
     void getListaScarpe_ritornaUnArrayJson() throws Exception {
