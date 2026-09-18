@@ -1,8 +1,11 @@
 package com.ecommerce.backend.controller;
 
+import com.ecommerce.backend.dto.AuthResponse;
 import com.ecommerce.backend.dto.LoginRequest;
 import com.ecommerce.backend.dto.RegisterRequest;
+import com.ecommerce.backend.dto.UserResponse;
 import com.ecommerce.backend.model.User;
+import com.ecommerce.backend.security.JwtService;
 import com.ecommerce.backend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,16 +27,22 @@ public class AuthController {
     private AuthService authService;
 
     /**
+     * Emette e valida i token JWT restituiti dopo login/registrazione.
+     */
+    @Autowired
+    private JwtService jwtService;
+
+    /**
      * Gestisce la registrazione di un nuovo utente nel sistema.
      * * @param request DTO contenente i dati di registrazione inviati dal client.
-     * @return ResponseEntity contenente l'oggetto {@link User} creato in caso di successo (HTTP 200),
+     * @return ResponseEntity contenente token JWT e dati utente (HTTP 200),
      * o un messaggio d'errore in caso di fallimento della validazione/logica (HTTP 400).
      */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             User createdUser = authService.register(request);
-            return ResponseEntity.ok(createdUser);
+            return ResponseEntity.ok(buildAuthResponse(createdUser));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -42,16 +51,25 @@ public class AuthController {
     /**
      * Gestisce la procedura di login verificando le credenziali fornite.
      * * @param request DTO contenente l'identificativo e la password dell'utente.
-     * @return ResponseEntity con l'oggetto {@link User} autenticato (HTTP 200),
+     * @return ResponseEntity con token JWT e dati utente (HTTP 200),
      * o uno status di errore Unauthorized in caso di credenziali errate (HTTP 401).
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             User user = authService.login(request);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(buildAuthResponse(user));
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body("Credenziali non valide");
         }
+    }
+
+    /**
+     * Genera il token JWT per l'utente e lo abbina alla sua proiezione sicura
+     * (senza l'hash della password), pronta per finire nel corpo della risposta.
+     */
+    private AuthResponse buildAuthResponse(User user) {
+        String token = jwtService.generateToken(user.getId());
+        return new AuthResponse(token, UserResponse.from(user));
     }
 }
