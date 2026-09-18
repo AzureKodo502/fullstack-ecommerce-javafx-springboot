@@ -39,8 +39,6 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
-			<!-- Include spring-security-crypto (BCryptPasswordEncoder) e in più la
-			     filter chain necessaria per proteggere gli endpoint con JWT. -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
@@ -49,9 +47,8 @@
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 
-		<!-- JWT: generazione e validazione dei token (io.jsonwebtoken / jjwt).
-		     jjwt-gson invece di jjwt-jackson per non introdurre una seconda
-		     versione di Jackson accanto a quella (3.x) già usata da Spring Boot. -->
+		<!-- jjwt-gson invece di jjwt-jackson: evita una seconda versione di Jackson
+		     accanto a quella (3.x) già usata da Spring Boot. -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>

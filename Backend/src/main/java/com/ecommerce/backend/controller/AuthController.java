@@ -27,7 +27,7 @@ public class AuthController {
     private AuthService authService;
 
     /**
-     * Emette e valida i token JWT restituiti dopo login/registrazione.
+     * Genera il token JWT restituito dopo login e registrazione.
      */
     @Autowired
     private JwtService jwtService;

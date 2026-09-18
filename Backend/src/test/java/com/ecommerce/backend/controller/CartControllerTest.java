@@ -31,10 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Test dello strato web di {@link CartController} con MockMvc.
  *
  * A differenza degli altri controller, questi endpoint richiedono un utente
- * autenticato: il token JWT vero e proprio non serve qui (JwtService è
- * mockato), ma il {@link SecurityContext} sì — lo si inietta per richiesta
- * con {@code authentication(...)}, così ogni test dichiara esplicitamente
- * "chi sta chiamando".
+ * autenticato: il token JWT vero e proprio non serve (JwtService è mockato),
+ * ma un'identità sì — la si inietta per richiesta con {@code authentication(...)},
+ * così ogni test dichiara esplicitamente "chi sta chiamando".
  */
 @WebMvcTest(CartController.class)
 @Import(SecurityConfig.class) // senza questo la filter chain di Security non è mai attiva nello slice

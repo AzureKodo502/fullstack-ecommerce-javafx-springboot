@@ -48,7 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userId, null, List.of());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JwtException | IllegalArgumentException e) {
-                // Token scaduto/manomesso/malformato: nessuna identità viene impostata.
                 SecurityContextHolder.clearContext();
             }
         }
