@@ -40,7 +40,10 @@ public class JsonParser {
 
         json = json.replace("{", "").replace("}", "");
 
-        // Estrai i campi
+        // Estrai i campi. Da quando il backend risponde con {"token":...,"user":{...}}
+        // invece dell'utente nudo, questi campi vivono dentro "user": ma dato che le
+        // graffe sono già state rimosse la ricerca per chiave funziona comunque,
+        // la struttura non è più annidata a livello di stringa.
         String id = extractValue(json, "id");
         String nome = extractValue(json, "nome");
         String cognome = extractValue(json, "cognome");
@@ -50,6 +53,19 @@ public class JsonParser {
         if (id.equals("N/A") || email.equals("N/A")) return null;
 
         return new Utente(id, nome, cognome, email);
+    }
+
+    /**
+     * Estrae il token JWT dalla risposta di {@code /api/auth/login} e
+     * {@code /api/auth/register}, che dal backend arriva come
+     * {@code {"token":"...","user":{...}}}.
+     * @return il token, oppure {@code null} se la risposta non ne contiene uno
+     * (es. risposta d'errore).
+     */
+    public static String parseToken(String json) {
+        if (json == null || json.isEmpty()) return null;
+        String token = extractValue(json.replace("{", "").replace("}", ""), "token");
+        return token.equals("N/A") ? null : token;
     }
 
     // Metodo specifico per estrarre le scarpe dalla risposta del Carrello del Backend

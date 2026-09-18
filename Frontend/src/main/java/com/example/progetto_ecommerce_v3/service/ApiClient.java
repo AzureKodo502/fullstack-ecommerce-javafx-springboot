@@ -1,5 +1,7 @@
 package com.example.progetto_ecommerce_v3.service;
 
+import com.example.progetto_ecommerce_v3.Database.SessionManager;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -30,13 +32,13 @@ public class ApiClient {
 
     // Metodo generico per fare richieste GET (Restituisce il JSON grezzo)
     public CompletableFuture<String> get(String endpoint) {
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + endpoint))
                 .GET()
-                .header("Content-Type", "application/json")
-                .build();
+                .header("Content-Type", "application/json");
+        aggiungiTokenSePresente(builder);
 
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        return client.sendAsync(builder.build(), HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     if (response.statusCode() != 200) {
                         throw new RuntimeException("Errore HTTP: " + response.statusCode());
@@ -47,13 +49,13 @@ public class ApiClient {
 
     // Metodo generico per fare richieste POST (Login, Registrazione, Ordini)
     public CompletableFuture<String> post(String endpoint, String jsonBody) {
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + endpoint))
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                .header("Content-Type", "application/json")
-                .build();
+                .header("Content-Type", "application/json");
+        aggiungiTokenSePresente(builder);
 
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        return client.sendAsync(builder.build(), HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     // 200 (OK) o 201 (CREATO)
                     if (response.statusCode() >= 200 && response.statusCode() < 300) {
@@ -63,5 +65,15 @@ public class ApiClient {
                         throw new RuntimeException("Errore HTTP: " + response.statusCode());
                     }
                 });
+    }
+
+    // Il backend ora richiede un JWT su carrello e ordini: se l'utente è loggato
+    // (e quindi SessionManager ha un token), lo allega a ogni richiesta.
+    // Login e registrazione restano pubblici, quindi funzionano anche senza.
+    private void aggiungiTokenSePresente(HttpRequest.Builder builder) {
+        String token = SessionManager.getInstance().getToken();
+        if (token != null && !token.isEmpty()) {
+            builder.header("Authorization", "Bearer " + token);
+        }
     }
 }
