@@ -41,3 +41,6 @@ data/
 /logs/
 .DS_Store
 Thumbs.db
+
+### Working notes (locali, non fanno parte del progetto pubblicato) ###
+/Handoff.md
