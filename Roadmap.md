@@ -20,7 +20,7 @@ Stato generale del progetto:
 | HTTP | `fetch` con un client sottile in `src/api/` | Niente Axios: una dipendenza in meno, e il wrapper è comunque il posto giusto per gestire errori/base URL. |
 | Cartella | `Frontend-React/` nuova, accanto a `Backend/` e `Frontend/` | `Frontend/` (JavaFX) **resta intatta** come riferimento storico — utile per uno screenshot prima/dopo nel README finale. |
 | Immagini prodotto | Servite dal **Backend** come risorse statiche (`/images/scarpe/...`) | Le immagini sono dati di prodotto, non asset del frontend: un solo posto dove vivono, coerente con `Scarpa.imageUrl`. |
-| Autenticazione (MVP) | Nessun token: `User` in Context + `localStorage` dopo il login | Il backend oggi non ha JWT. Rifarlo bene è un progetto a parte (vedi Stretch) — non blocca l'MVP del frontend. |
+| Autenticazione | JWT (fatto il 2026-09-18, prima della Fase 0) | Il backend firma un token alla login/registrazione; il frontend React lo salva (es. in `localStorage`) e lo allega come header `Authorization: Bearer <token>` a ogni richiesta — stesso pattern già usato nel client JavaFX aggiornato. |
 
 Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata strada facendo, si annota qui il cambio e il motivo.
 
@@ -58,13 +58,15 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 **Obiettivo:** login e registrazione funzionanti contro le API reali.
 
-- [ ] Client HTTP in `src/api/client.js` (base URL + gestione errori centralizzata)
-- [ ] `AuthContext`: utente corrente, `login()`, `logout()`, `register()`, persistenza in `localStorage`
+> Aggiornamento 2026-09-18: il backend ora risponde con `{token, user}` (JWT già pronto, vedi Stretch goal più sotto). Questa fase diventa "consumare" quell'API, non progettarla da zero.
+
+- [ ] Client HTTP in `src/api/client.js` (base URL + header `Authorization: Bearer <token>` automatico quando presente, sul modello di `ApiClient.java` nel client JavaFX)
+- [ ] `AuthContext`: utente corrente, token, `login()`, `logout()`, `register()`, persistenza in `localStorage`
 - [ ] Pagina **Login** e pagina **Registrazione** (form MUI, validazione client)
 - [ ] Route protette: redirect a `/login` se non autenticato (Carrello, Checkout, Storico)
 
-**Fatto quando:** una registrazione crea davvero un utente nel DB H2, il login popola il context, un refresh di pagina non disconnette.
-**Stima:** 3–4 giorni. **PR:** `feat(frontend): autenticazione (login, registrazione, route protette)`
+**Fatto quando:** una registrazione crea davvero un utente nel DB H2, il login popola il context (utente + token), un refresh di pagina non disconnette, e le chiamate a carrello/ordini passano il token senza errori 401/403.
+**Stima:** 2–3 giorni (ridotta: l'API di auth è già pronta). **PR:** `feat(frontend): autenticazione (login, registrazione, route protette)`
 
 ---
 
@@ -159,6 +161,6 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ## Stretch goal (dopo l'MVP, opzionali)
 
-- **JWT** — sostituire l'auth "ingenua" con un vero token + refresh + endpoint protetti (Spring Security). ~3–4 giorni, PR dedicata, mini-roadmap a parte.
+- ~~**JWT**~~ — **fatto in anticipo il 2026-09-18** (branch `feat/jwt-auth`), prima ancora di iniziare la Fase 0. Vedi `Handoff.md` per i dettagli. Autenticazione stateless con Spring Security + jjwt, controllo di ownership su carrello/ordini (403 se lo userId non coincide col token), client JavaFX aggiornato per inviare il token. Refresh token **non incluso** (token con scadenza fissa a 24h) — se servisse, resta da fare a parte.
 - **Deploy** — frontend su Vercel/Netlify (free tier, statico, nessun costo), backend su Render free web service. Richiede di sostituire H2-su-file con **Neon Postgres** (stesso provider free già usato per il progetto RAG) perché Render free non offre disco persistente — H2 si resetterebbe a ogni sleep/riavvio. URL API configurabile via env. Nessun costo ricorrente: sono tutti tier fissi gratuiti, non a consumo come le chiamate API di un LLM. ~1–2 giorni, da fare per ultimo e solo se si vuole un link live oltre alla demo locale.
 - **TypeScript** — conversione incrementale file per file, quando c'è tempo. Non blocca nulla.
