@@ -55,19 +55,17 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ---
 
-## Fase 2 — Autenticazione
+## Fase 2 — Autenticazione ✅ (2026-10-01)
 
 **Obiettivo:** login e registrazione funzionanti contro le API reali.
 
-> Aggiornamento 2026-09-18: il backend ora risponde con `{token, user}` (JWT già pronto, vedi Stretch goal più sotto). Questa fase diventa "consumare" quell'API, non progettarla da zero.
+- [x] Client HTTP in `src/api/client.js` (già fatto in Fase 1)
+- [x] `AuthContext`/`AuthProvider`: utente corrente, token, `login()`, `logout()`, `register()`, persistenza in `localStorage`
+- [x] Pagina **Login** e pagina **Registrazione** (form MUI, validazione client identica a `RegistrazioneController.java`)
+- [x] `ProtectedRoute`: redirect a `/login` se non autenticato, ricordando la pagina di provenienza. Applicata per ora a `/account` (prima pagina protetta) — Carrello/Checkout/Storico la useranno allo stesso modo quando esisteranno (Fasi 4-5)
 
-- [ ] Client HTTP in `src/api/client.js` (base URL + header `Authorization: Bearer <token>` automatico quando presente, sul modello di `ApiClient.java` nel client JavaFX)
-- [ ] `AuthContext`: utente corrente, token, `login()`, `logout()`, `register()`, persistenza in `localStorage`
-- [ ] Pagina **Login** e pagina **Registrazione** (form MUI, validazione client)
-- [ ] Route protette: redirect a `/login` se non autenticato (Carrello, Checkout, Storico)
-
-**Fatto quando:** una registrazione crea davvero un utente nel DB H2, il login popola il context (utente + token), un refresh di pagina non disconnette, e le chiamate a carrello/ordini passano il token senza errori 401/403.
-**Stima:** 2–3 giorni (ridotta: l'API di auth è già pronta). **PR:** `feat(frontend): autenticazione (login, registrazione, route protette)`
+**Fatto quando:** una registrazione crea davvero un utente nel DB H2, il login popola il context (utente + token), un refresh di pagina non disconnette. ✅ Verificato end-to-end con Backend e frontend avviati insieme: registrazione reale, redirect automatico, refresh senza logout, `/account` senza sessione → redirect a `/login`, nessun errore console.
+**Branch/PR:** `feat/react-phase-2-auth`, PR da aprire.
 
 ---
 
