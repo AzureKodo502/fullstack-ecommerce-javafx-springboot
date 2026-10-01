@@ -1,0 +1,7 @@
+/* Il reset vero e proprio lo fa <CssBaseline /> di MUI (vedi main.jsx).
+   Qui resta solo quanto serve perché il layout occupi tutta l'altezza. */
+html,
+body,
+#root {
+  height: 100%;
+}
