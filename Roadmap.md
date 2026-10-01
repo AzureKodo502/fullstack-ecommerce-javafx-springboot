@@ -39,18 +39,19 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ---
 
-## Fase 1 — Scaffold del progetto React
+## Fase 1 — Scaffold del progetto React ✅ (2026-10-01)
 
 **Obiettivo:** un progetto che builda, con la struttura e il layout base.
 
-- [ ] `npm create vite@latest Frontend-React -- --template react`
-- [ ] Installare `react-router-dom`, `@mui/material`, `@emotion/react`, `@emotion/styled`
-- [ ] Struttura cartelle: `src/{api,components,context,pages,hooks}`
-- [ ] `.env` con `VITE_API_BASE_URL=http://localhost:8080`
-- [ ] Layout base (Navbar + Footer) con tema MUI, routing con una Home placeholder
+- [x] `npm create vite@latest Frontend-React -- --template react` (React 19, Vite 8, oxlint)
+- [x] Installati `react-router-dom`, `@mui/material`, `@mui/icons-material`, `@emotion/react`, `@emotion/styled`
+- [x] Struttura cartelle: `src/{api,components,context,hooks,pages}`
+- [x] `.env` con `VITE_API_BASE_URL=http://localhost:8080` (tracciato: nessun segreto)
+- [x] Layout base (Navbar + Footer) con tema MUI, routing con una Home placeholder
+- [x] `src/api/client.js`: wrapper fetch con token automatico da `localStorage`, stesso ruolo di `ApiClient.java` nel client JavaFX
 
-**Fatto quando:** `npm run build` verde, `npm run dev` mostra la Home con navbar.
-**Stima:** 2–3 giorni. **PR:** `feat(frontend): scaffold React + Vite + Router + MUI`
+**Fatto quando:** `npm run build` verde, `npm run dev` mostra la Home con navbar. ✅ Verificato anche visivamente (screenshot) e via console (nessun errore).
+**Branch/PR:** `feat/react-phase-1-scaffold`, PR da aprire.
 
 ---
 
