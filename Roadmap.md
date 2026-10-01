@@ -26,16 +26,16 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ---
 
-## Fase 0 — Backend pronto per il web
+## Fase 0 — Backend pronto per il web ✅ (2026-10-01)
 
 **Obiettivo:** il backend accetta richieste da un'origine browser e sa servire le immagini dei prodotti.
 
-- [ ] Configurazione CORS (`WebMvcConfigurer`) che abilita `http://localhost:5173` (dev server Vite) e lascia un punto di estensione per l'origine di produzione
-- [ ] Copiare le immagini scarpe da `Frontend/src/main/resources/immaginiScarpe/` a `Backend/src/main/resources/static/images/scarpe/`
-- [ ] Verificare che `GET /images/scarpe/<file>.png` risponda 200
+- [x] Configurazione CORS — già dentro `SecurityConfig` (fatta insieme al JWT), verificata con una preflight reale da `http://localhost:5173`: `Access-Control-Allow-Origin` corretto
+- [x] Copiate le 54 immagini scarpe da `Frontend/src/main/resources/immaginiScarpe/` a `Backend/src/main/resources/static/images/scarpe/`
+- [x] Verificato `GET /images/scarpe/<file>.png` → 200 (e un file inesistente → 404, dopo un fix: rimbalzava su `/error`, bloccato dal SecurityConfig, risultava 401)
 
-**Fatto quando:** `./mvnw verify` verde + una chiamata manuale a un'immagine funziona da browser.
-**Stima:** 1–2 giorni. **PR:** `feat(backend): CORS e static serving delle immagini prodotto`
+**Fatto quando:** `./mvnw verify` verde + una chiamata manuale a un'immagine funziona da browser. ✅ Verificato anche a mano con il server acceso (vedi Handoff.md per il dettaglio).
+**Branch/PR:** `feat/react-phase-0-backend-cors`, 2 commit, PR da aprire.
 
 ---
 
