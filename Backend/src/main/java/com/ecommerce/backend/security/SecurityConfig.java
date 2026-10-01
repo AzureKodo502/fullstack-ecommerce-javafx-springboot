@@ -50,6 +50,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        // Senza questo, una richiesta a una risorsa statica inesistente (es. un
+                        // file immagine con nome sbagliato) rimbalza sulla pagina d'errore, che
+                        // essendo "non permessa" diventa un 401 invece di un più corretto 404.
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 // La console H2 è servita dentro un <frame>: senza questo Spring Security la blocca.
