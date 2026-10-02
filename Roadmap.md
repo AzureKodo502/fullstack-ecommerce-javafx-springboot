@@ -85,17 +85,21 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ---
 
-## Fase 4 — Carrello
+## Fase 4 — Carrello ✅ (2026-10-02)
 
 **Obiettivo:** aggiungere, rimuovere, vedere gli articoli; badge nel nav.
 
-- [ ] `CartContext` + reducer (rispecchia la regola di merge quantità già testata nel backend)
-- [ ] Integrazione `POST /api/cart/add` e `POST /api/cart/remove`
-- [ ] Pagina Carrello: articoli, quantità, subtotali, totale
-- [ ] Badge contatore in Navbar
+- [x] `CartContext`/`CartProvider` + reducer. **Scelta diversa dal piano**: invece di rifare la regola di merge lato client, il backend resta fonte di verità e lo stato si aggiorna con la riga che il server risponde (già unita, stesso id)
+- [x] Integrazione `POST /api/cart/add` e `POST /api/cart/remove`
+- [x] Pagina Carrello (`/carrello`, protetta): articoli, quantità, subtotali, totale
+- [x] Badge contatore (numero di paia) in Navbar
+- [x] Pulsante "Aggiungi al carrello" attivo nel dettaglio (da sloggati porta al login e poi torna al prodotto)
+- [x] **Backend**: `@JsonIgnore` su `User.password` (l'hash usciva in ogni riga del carrello)
+- [x] **Fix a codice della Fase 2**: il token ora si salva prima del dispatch, non in un `useEffect` (causava 401 al primo caricamento del carrello)
 
-**Fatto quando:** aggiungere due volte la stessa scarpa+taglia incrementa la quantità invece di duplicare la riga — stessa regola già coperta da `CartServiceTest`.
-**Stima:** 3–5 giorni. **PR:** `feat(frontend): carrello (context, pagina, badge)`
+**Fatto quando:** aggiungere due volte la stessa scarpa+taglia incrementa la quantità invece di duplicare la riga. ✅ Verificato con Backend e frontend insieme (una riga con quantità 2; taglia diversa = seconda riga).
+**Limite noto**: il backend non ha un decremento di quantità, quindi dal carrello si può solo rimuovere l'intera riga (come nel client JavaFX).
+**Branch/PR:** `feat/react-phase-4-carrello`, 3 commit, PR da aprire.
 
 ---
 
