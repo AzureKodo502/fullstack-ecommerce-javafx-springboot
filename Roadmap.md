@@ -69,18 +69,19 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ---
 
-## Fase 3 — Catalogo prodotti
+## Fase 3 — Catalogo prodotti ✅ (2026-10-02)
 
 **Obiettivo:** sfogliare, cercare, filtrare le scarpe.
 
-- [ ] Hook `useScarpe` → `GET /api/products`
-- [ ] Pagina Catalogo: griglia di card prodotto (MUI `Card`)
-- [ ] Barra di ricerca → `GET /api/products/search?q=`
-- [ ] Filtro per marchio → `GET /api/products/brand/{marchio}`
-- [ ] Pagina Dettaglio prodotto (`/prodotti/:id`) con selezione taglia
+- [x] Hook `useScarpe` → `GET /api/products` (+ `useScarpa`, `useMarchi`, `useAsync` di base)
+- [x] Pagina Catalogo: griglia di card prodotto (MUI `Card`)
+- [x] Barra di ricerca → `GET /api/products/search?q=`
+- [x] Filtro per marchio → `GET /api/products/brand/{marchio}` (combinabile con la ricerca)
+- [x] Pagina Dettaglio prodotto (`/prodotti/:id`) con selezione taglia 36–44
+- [x] **Backend**: aggiunto `GET /api/products/{id}` (con 404) — mancava, il service lo aveva già
 
-**Fatto quando:** lista, ricerca e filtro mostrano dati reali dal backend; il click su una card apre il dettaglio.
-**Stima:** 3–5 giorni. **PR:** `feat(frontend): catalogo prodotti (lista, ricerca, filtro, dettaglio)`
+**Fatto quando:** lista, ricerca e filtro mostrano dati reali dal backend; il click su una card apre il dettaglio. ✅ Verificato con Backend e frontend avviati insieme.
+**Branch/PR:** `feat/react-phase-3-catalogo`, 2 commit, PR da aprire.
 
 ---
 
