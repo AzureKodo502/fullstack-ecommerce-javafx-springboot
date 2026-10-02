@@ -1,5 +1,6 @@
 package com.ecommerce.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,8 +47,11 @@ public class User {
 
     /**
      * Hash della password dell'utente.
-     * Non deve mai essere memorizzata in chiaro per ragioni di sicurezza.
+     * Non deve mai essere memorizzata in chiaro per ragioni di sicurezza, e
+     * non deve mai uscire in una risposta JSON: User viaggia annidato dentro
+     * CartItem e Order, quindi l'esclusione sta qui e non solo in UserResponse.
      */
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
