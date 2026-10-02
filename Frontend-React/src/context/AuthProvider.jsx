@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useReducer } from "react";
 import { apiClient } from "../api/client.js";
 import { AuthContext } from "./AuthContext.js";
 
@@ -47,30 +47,36 @@ function reducer(_state, action) {
  * operazioni che lo cambiano. Persistito in localStorage così un refresh
  * di pagina non disconnette — letto anche da api/client.js per allegare il
  * token alle richieste, indipendentemente da questo Context.
+ *
+ * La persistenza avviene dentro le azioni, PRIMA del dispatch, e non in un
+ * useEffect: gli effetti dei componenti figli (es. CartProvider, che carica
+ * il carrello appena cambia l'utente) girano prima di quelli del genitore,
+ * quindi con un effect la prima richiesta partirebbe senza token → 401.
  */
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, undefined, loadInitialState);
 
-  useEffect(() => {
-    persist(state);
-  }, [state]);
-
-  const login = useCallback(async (email, password) => {
-    const { token, user } = await apiClient.post("/api/auth/login", { email, password });
+  const autentica = useCallback(({ token, user }) => {
+    persist({ token, user });
     dispatch({ type: "AUTHENTICATED", token, user });
   }, []);
 
-  const register = useCallback(async (nome, cognome, email, password) => {
-    const { token, user } = await apiClient.post("/api/auth/register", {
-      nome,
-      cognome,
-      email,
-      password,
-    });
-    dispatch({ type: "AUTHENTICATED", token, user });
-  }, []);
+  const login = useCallback(
+    async (email, password) => {
+      autentica(await apiClient.post("/api/auth/login", { email, password }));
+    },
+    [autentica],
+  );
+
+  const register = useCallback(
+    async (nome, cognome, email, password) => {
+      autentica(await apiClient.post("/api/auth/register", { nome, cognome, email, password }));
+    },
+    [autentica],
+  );
 
   const logout = useCallback(() => {
+    persist({ token: null, user: null });
     dispatch({ type: "LOGGED_OUT" });
   }, []);
 
