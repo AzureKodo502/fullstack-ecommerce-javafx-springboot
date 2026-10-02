@@ -11,6 +11,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,6 +70,25 @@ class ScarpaControllerTest {
                 .andExpect(status().isOk());
 
         verify(scarpaService).getScarpeByMarchio("Nike");
+    }
+
+    @Test
+    void getScarpa_ritorna200ELaScarpa_quandoEsiste() throws Exception {
+        Scarpa s = Scarpa.builder().id(5L).nome("Air Max").marchio("Nike").prezzo(129.99).build();
+        when(scarpaService.getScarpaById(5L)).thenReturn(Optional.of(s));
+
+        mockMvc.perform(get("/api/products/5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(5))
+                .andExpect(jsonPath("$.nome").value("Air Max"));
+    }
+
+    @Test
+    void getScarpa_ritorna404_quandoNonEsiste() throws Exception {
+        when(scarpaService.getScarpaById(999L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/products/999"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

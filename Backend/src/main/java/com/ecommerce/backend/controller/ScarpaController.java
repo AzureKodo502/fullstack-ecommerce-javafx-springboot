@@ -3,6 +3,7 @@ package com.ecommerce.backend.controller;
 import com.ecommerce.backend.model.Scarpa;
 import com.ecommerce.backend.service.ScarpaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +30,18 @@ public class ScarpaController {
     @GetMapping
     public List<Scarpa> getListaScarpe() {
         return scarpaService.getAllScarpe();
+    }
+
+    /**
+     * Recupera una singola scarpa tramite il suo identificativo.
+     * * @param id Identificativo del prodotto.
+     * @return La {@link Scarpa} richiesta (HTTP 200), o HTTP 404 se non esiste.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Scarpa> getScarpa(@PathVariable Long id) {
+        return scarpaService.getScarpaById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
