@@ -33,7 +33,9 @@ async function request(path, { method = "GET", body } = {}) {
 
   if (!response.ok) {
     const message = await response.text().catch(() => "");
-    throw new Error(message || `Errore HTTP ${response.status}`);
+    const error = new Error(message || `Errore HTTP ${response.status}`);
+    error.status = response.status; // permette a chi chiama di distinguere es. 404 da 500
+    throw error;
   }
 
   if (response.status === 204) return null;
