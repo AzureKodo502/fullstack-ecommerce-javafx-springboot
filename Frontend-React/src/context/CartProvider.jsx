@@ -81,6 +81,12 @@ export function CartProvider({ children }) {
     [userId],
   );
 
+  // Dopo il checkout il server ha già svuotato il carrello: si allinea lo stato
+  // locale senza una GET in più.
+  const svuota = useCallback(() => {
+    dispatch({ type: "LOADED", items: [] });
+  }, []);
+
   const value = useMemo(
     () => ({
       items: state.items,
@@ -90,8 +96,9 @@ export function CartProvider({ children }) {
       totale: calcolaTotale(state.items),
       aggiungi,
       rimuovi,
+      svuota,
     }),
-    [state, aggiungi, rimuovi],
+    [state, aggiungi, rimuovi, svuota],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

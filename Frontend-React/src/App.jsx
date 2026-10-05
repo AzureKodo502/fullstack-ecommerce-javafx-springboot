@@ -10,6 +10,8 @@ import Login from "./pages/Login.jsx";
 import Registrazione from "./pages/Registrazione.jsx";
 import Account from "./pages/Account.jsx";
 import Carrello from "./pages/Carrello.jsx";
+import Checkout from "./pages/Checkout.jsx";
+import Ordini from "./pages/Ordini.jsx";
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/carrello" element={<Carrello />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/ordini" element={<Ordini />} />
             <Route path="/account" element={<Account />} />
           </Route>
         </Routes>

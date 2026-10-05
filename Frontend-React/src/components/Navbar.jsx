@@ -39,6 +39,9 @@ export default function Navbar() {
           </IconButton>
           {isAuthenticated ? (
             <>
+              <Button color="inherit" component={RouterLink} to="/ordini">
+                Ordini
+              </Button>
               <Button color="inherit" component={RouterLink} to="/account">
                 {user.nome}
               </Button>

@@ -110,14 +110,9 @@ export default function Carrello() {
 
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
             <Typography variant="h5">Totale: {formatPrezzo(totale)}</Typography>
-            <Box sx={{ textAlign: "right" }}>
-              <Button variant="contained" size="large" disabled>
-                Procedi al checkout
-              </Button>
-              <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
-                Il checkout arriva nella prossima fase.
-              </Typography>
-            </Box>
+            <Button component={RouterLink} to="/checkout" variant="contained" size="large">
+              Procedi al checkout
+            </Button>
           </Box>
         </>
       )}
