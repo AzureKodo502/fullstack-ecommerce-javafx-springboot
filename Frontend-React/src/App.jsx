@@ -9,6 +9,7 @@ import ProdottoDettaglio from "./pages/ProdottoDettaglio.jsx";
 import Login from "./pages/Login.jsx";
 import Registrazione from "./pages/Registrazione.jsx";
 import Account from "./pages/Account.jsx";
+import Carrello from "./pages/Carrello.jsx";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/registrazione" element={<Registrazione />} />
 
           <Route element={<ProtectedRoute />}>
+            <Route path="/carrello" element={<Carrello />} />
             <Route path="/account" element={<Account />} />
           </Route>
         </Routes>

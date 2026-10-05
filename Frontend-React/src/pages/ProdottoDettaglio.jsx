@@ -1,23 +1,53 @@
 import { useState } from "react";
-import { Link as RouterLink, useParams } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Alert,
   Box,
   Button,
   CircularProgress,
   Container,
+  Snackbar,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { TAGLIE, formatPrezzo, imageSrc } from "../api/products.js";
+import { useAuth } from "../hooks/useAuth.js";
+import { useCart } from "../hooks/useCart.js";
 import { useScarpa } from "../hooks/useScarpa.js";
 
 export default function ProdottoDettaglio() {
   const { id } = useParams();
   const { data: scarpa, loading, error } = useScarpa(id);
+  const { isAuthenticated } = useAuth();
+  const { aggiungi } = useCart();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [taglia, setTaglia] = useState(null);
+  const [inCorso, setInCorso] = useState(false);
+  const [erroreCarrello, setErroreCarrello] = useState(null);
+  const [aggiunto, setAggiunto] = useState(false);
+
+  async function handleAggiungi() {
+    // Il carrello è per utente: da sloggati si passa dal login e si torna qui.
+    if (!isAuthenticated) {
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+
+    setErroreCarrello(null);
+    setInCorso(true);
+    try {
+      await aggiungi(scarpa.id, taglia);
+      setAggiunto(true);
+    } catch (e) {
+      setErroreCarrello(e.message || "Impossibile aggiungere al carrello.");
+    } finally {
+      setInCorso(false);
+    }
+  }
 
   const indietro = (
     <Button component={RouterLink} to="/prodotti" sx={{ mb: 2 }}>
@@ -95,16 +125,37 @@ export default function ProdottoDettaglio() {
             </ToggleButtonGroup>
           </Box>
 
+          {erroreCarrello && <Alert severity="error">{erroreCarrello}</Alert>}
+
           <Box>
-            <Button variant="contained" size="large" disabled>
-              Aggiungi al carrello
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleAggiungi}
+              disabled={taglia === null || inCorso}
+            >
+              {inCorso ? "Aggiunta in corso…" : "Aggiungi al carrello"}
             </Button>
-            <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
-              Il carrello arriva nella prossima fase.
-            </Typography>
+            {taglia === null && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+                Seleziona una taglia per continuare.
+              </Typography>
+            )}
           </Box>
         </Stack>
       </Box>
+
+      <Snackbar
+        open={aggiunto}
+        autoHideDuration={4000}
+        onClose={() => setAggiunto(false)}
+        message="Aggiunto al carrello"
+        action={
+          <Button color="inherit" size="small" component={RouterLink} to="/carrello">
+            Vai al carrello
+          </Button>
+        }
+      />
     </Container>
   );
 }

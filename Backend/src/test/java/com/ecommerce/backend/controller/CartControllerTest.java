@@ -2,6 +2,7 @@ package com.ecommerce.backend.controller;
 
 import com.ecommerce.backend.dto.AddToCartRequest;
 import com.ecommerce.backend.model.CartItem;
+import com.ecommerce.backend.model.User;
 import com.ecommerce.backend.security.JwtService;
 import com.ecommerce.backend.security.SecurityConfig;
 import com.ecommerce.backend.service.CartService;
@@ -64,6 +65,23 @@ class CartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].quantita").value(2))
                 .andExpect(jsonPath("$[0].taglia").value(42));
+    }
+
+    @Test
+    void getCarrello_nonEsponeLHashDellaPasswordDellUtenteAnnidato() throws Exception {
+        User utente = new User();
+        utente.setId(1L);
+        utente.setEmail("mario@example.com");
+        utente.setPassword("$2a$10$hash-che-non-deve-uscire");
+        CartItem item = new CartItem();
+        item.setId(1L);
+        item.setUser(utente);
+        when(cartService.getCarrelloByUserId(1L)).thenReturn(List.of(item));
+
+        mockMvc.perform(get("/api/cart/1").with(authentication(autenticatoCome(1L))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].user.email").value("mario@example.com"))
+                .andExpect(jsonPath("$[0].user.password").doesNotExist());
     }
 
     @Test
