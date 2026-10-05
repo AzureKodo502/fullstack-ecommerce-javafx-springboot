@@ -19,6 +19,8 @@ npm run dev      # http://localhost:5173
 | `npm run build` | Build di produzione in `dist/` |
 | `npm run preview` | Serve la build di produzione in locale |
 | `npm run lint` | Lint con [oxlint](https://oxc.rs/) |
+| `npm test` | Esegue i test (Vitest + React Testing Library) una volta |
+| `npm run test:watch` | Test in modalità watch, si rilanciano a ogni modifica |
 
 ## Stack
 
