@@ -118,17 +118,19 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ---
 
-## Fase 6 — Test frontend
+## Fase 6 — Test frontend ✅ (2026-10-07)
 
 **Obiettivo:** applicare al frontend la stessa disciplina di test usata sul backend.
 
-- [ ] Vitest + React Testing Library
-- [ ] Test su `AuthContext` / `CartContext` (logica pura, stesso spirito degli unit test Mockito)
-- [ ] Test su 2–3 componenti chiave (form di login, card prodotto, badge carrello) con render + interazione utente
-- [ ] Mock delle chiamate API (`msw` o mock di `fetch`)
+- [x] Vitest 5 + React Testing Library (jsdom), script `npm test` e `npm run test:watch`
+- [x] Test su `AuthProvider` / `CartProvider` (stesso spirito degli unit test Mockito sui service)
+- [x] Test su componenti e pagine: Login, Registrazione, ProtectedRoute, ScarpaCard, Navbar
+- [x] Mock delle chiamate API con `vi.mock` / `fetch` finto — niente `msw`: i moduli `api/*.js` sono sottili e il confine da mockare è chiaro
 
-**Fatto quando:** 10–15 test veri, `npm test` verde.
-**Stima:** 3–4 giorni. **PR:** `test(frontend): Vitest + React Testing Library su context e componenti chiave`
+**Fatto quando:** `npm test` verde. ✅ **48 test in 11 file** (oltre i 10–15 previsti: tutti su comportamenti con un motivo, nessuno di riempimento).
+**Verificato per mutazione**: 5 rotture mirate del codice (scarto risposte in ritardo, merge per id, token in un `useEffect`, ripiego sulle risposte non JSON, scarto in `useAsync`) → ogni volta fallisce esattamente il test dedicato e nessun altro.
+**Non incluso (di proposito)**: le pagine `Catalogo`, `ProdottoDettaglio`, `Carrello`, `Checkout`, `Ordini` non hanno test di pagina. La loro logica sta già coperta in hook/provider/utils; i test di pagina sarebbero soprattutto MUI e routing. Se servono, sono il candidato naturale per un'estensione.
+**Branch/PR:** `feat/react-phase-6-test-frontend`, 2 commit, PR da aprire.
 
 ---
 
