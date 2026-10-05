@@ -103,16 +103,18 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ---
 
-## Fase 5 — Checkout e storico ordini
+## Fase 5 — Checkout e storico ordini ✅ (2026-10-06)
 
 **Obiettivo:** completare un acquisto e vederlo nello storico.
 
-- [ ] Pagina Checkout (riepilogo + conferma) → `POST /api/orders/checkout/{userId}`
-- [ ] Svuotamento del carrello lato client dopo conferma
-- [ ] Pagina Storico Ordini → `GET /api/orders/user/{userId}`
+- [x] Pagina Checkout (riepilogo + conferma) → `POST /api/orders/checkout/{userId}`
+- [x] Svuotamento del carrello lato client dopo conferma (`svuota()` nel `CartProvider`)
+- [x] Pagina Storico Ordini → `GET /api/orders/user/{userId}`
+- [x] Link "Ordini" in Navbar per i loggati; "Procedi al checkout" attivo nel carrello
 
-**Fatto quando:** il flusso browse → carrello → checkout → storico funziona senza refresh manuale della pagina.
-**Stima:** 2–3 giorni. **PR:** `feat(frontend): checkout e storico ordini`
+**Fatto quando:** il flusso browse → carrello → checkout → storico funziona senza refresh manuale della pagina. ✅ Verificato con Backend e frontend insieme, compreso il caso di due schede con stato diverso (400 gestito, nessun ordine doppio).
+**Limiti noti (backend)**: l'ordine restituisce solo testata e totale, non le righe, quindi lo storico non mostra *cosa* è stato comprato; non c'è un pagamento (l'ordine nasce confermato). Esporre le righe richiederebbe una modifica backend (+ test).
+**Branch/PR:** `feat/react-phase-5-checkout`, 1 commit, PR da aprire.
 
 ---
 
