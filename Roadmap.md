@@ -134,17 +134,22 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ---
 
-## Fase 7 — Rifinitura
+## Fase 7 — Rifinitura ✅ (2026-10-09)
 
 **Obiettivo:** qualità da portfolio, non solo "funziona".
 
-- [ ] Stati di loading/errore su ogni chiamata API (niente schermate vuote silenziose)
-- [ ] Responsive mobile/tablet
-- [ ] Dark/light mode (parità con il tema del client JavaFX)
-- [ ] Accessibilità di base (focus visibile, label sui form)
+- [x] Stati di loading/errore su ogni chiamata API. Chiusi i buchi trovati: il checkout diceva "carrello vuoto" quando il carrello non si caricava; un URL sbagliato dava una **pagina bianca** (ora 404); errori di rete e JSON generico di Spring mostrati grezzi (ora messaggi leggibili)
+- [x] Responsive: sotto i 900px la navbar diventa un menu; verificato a 375px senza overflow orizzontale (catalogo, carrello, login)
+- [x] Dark/light mode con interruttore, parte dal tema del sistema e ricorda la scelta
+- [x] Accessibilità di base: link "Salta al contenuto", titolo per ogni pagina, `<nav>` e `<main>` con landmark, `aria-pressed` e etichetta sul gruppo taglie, link dei form leggibili in scuro
+- [x] **Debito chiuso — token scaduto**: un 401 su una richiesta con token disconnette l'utente, e il login spiega "La sessione è scaduta"
+- [x] **Debito chiuso — bundle > 500 kB**: code-splitting per pagina, da 516 a 252 kB
+- [x] **Debito chiuso — stile pulsanti taglia**
 
-**Fatto quando:** l'app si usa bene da telefono e nessuna azione fallisce in silenzio.
-**Stima:** 3–5 giorni. **PR:** `polish(frontend): stati di caricamento/errore, responsive, dark mode`
+**Fatto quando:** l'app si usa bene da telefono e nessuna azione fallisce in silenzio. ✅ Verificato nel browser con backend e frontend avviati (temi, 375px, token scaduto simulato, backend spento).
+**Test**: 70 frontend (22 in più, tutti verificati per mutazione).
+**Non fatto (di proposito)**: gestione del focus al cambio di pagina (spostarlo sul `<main>` a ogni navigazione, utile per screen reader); contrasto dei colori non misurato con uno strumento automatico (solo controllato a vista in entrambi i temi); nessun test di accessibilità automatico (es. axe).
+**Branch/PR:** `feat/react-phase-7-rifinitura`, 3 commit + docs, PR da aprire.
 
 ---
 
