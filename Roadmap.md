@@ -5,7 +5,7 @@
 Stato generale del progetto:
 - [x] **Punto 1** — Testing backend (JUnit 5 + Mockito)
 - [x] **Punto 2** — CI con GitHub Actions
-- [ ] **Punto 3** — Frontend React ← *siamo qui*
+- [x] **Punto 3** — Frontend React (MVP completo, Fasi 0–8)
 
 ---
 
@@ -153,16 +153,18 @@ Queste scelte non si ridiscutono a ogni sessione: se una si rivela sbagliata str
 
 ---
 
-## Fase 8 — CI e narrazione
+## Fase 8 — CI e narrazione ✅ (2026-10-09)
 
 **Obiettivo:** pipeline verde anche sul frontend, storia coerente nel README.
 
-- [ ] Job CI separato, filtrato su `Frontend-React/**` (`npm ci && npm run build && npm test`)
-- [ ] Badge CI frontend nel README (accanto a quello backend)
-- [ ] Sezione "Frontend React" nel README con screenshot prima (JavaFX) / dopo (React)
+- [x] Job CI separato, filtrato su `Frontend-React/**` (`npm ci`, lint, test, build) in `frontend.yml`; anche `ci.yml` ora parte solo se cambia `Backend/**`
+- [x] Badge CI frontend nel README (accanto a quello backend)
+- [x] README (italiano e inglese) riscritti: client React, screenshot prima (JavaFX) / dopo (React), JWT, sezione Testing con 140 test, due workflow
+- [x] Ripristinato il Maven wrapper di `Frontend/`, che il README citava (`./mvnw javafx:run`) ma non esisteva
 
-**Fatto quando:** due badge verdi nel README (backend + frontend), README aggiornato.
-**Stima:** 1–2 giorni. **PR:** `ci(frontend): build e test su GitHub Actions` + `docs: README con sezione frontend React`
+**Fatto quando:** due badge verdi nel README (backend + frontend), README aggiornato. Il primo run reale di `frontend.yml` si vede solo sulla PR.
+**Nota:** il badge "Test 140 passing" è statico, va aggiornato a mano se il numero cambia.
+**Branch/PR:** `feat/react-phase-8-ci`
 
 ---
 
