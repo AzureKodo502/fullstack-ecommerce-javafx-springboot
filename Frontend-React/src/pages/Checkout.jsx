@@ -19,7 +19,7 @@ import { subtotaleRiga } from "../utils/carrello.js";
 
 export default function Checkout() {
   const { user } = useAuth();
-  const { items, loading, totale, svuota } = useCart();
+  const { items, loading, error: erroreCarrello, totale, svuota } = useCart();
   const [inCorso, setInCorso] = useState(false);
   const [errore, setErrore] = useState(null);
   const [ordine, setOrdine] = useState(null);
@@ -47,6 +47,9 @@ export default function Checkout() {
   if (ordine) {
     return (
       <Container maxWidth="sm" sx={{ py: 6 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Ordine confermato
+        </Typography>
         <Alert severity="success" sx={{ mb: 3 }}>
           Ordine #{ordine.id} confermato — totale {formatPrezzo(ordine.totale)}.
         </Alert>
@@ -74,7 +77,12 @@ export default function Checkout() {
         </Box>
       )}
 
-      {!loading && items.length === 0 && (
+      {/* Se il carrello non si carica NON si può dire che è vuoto: sarebbe falso. */}
+      {!loading && erroreCarrello && (
+        <Alert severity="error">Impossibile caricare il carrello. ({erroreCarrello.message})</Alert>
+      )}
+
+      {!loading && !erroreCarrello && items.length === 0 && (
         <Stack spacing={2} sx={{ alignItems: "flex-start" }}>
           <Typography color="text.secondary">Non c&apos;è nulla da ordinare: il carrello è vuoto.</Typography>
           <Button component={RouterLink} to="/prodotti" variant="contained">
@@ -83,7 +91,7 @@ export default function Checkout() {
         </Stack>
       )}
 
-      {!loading && items.length > 0 && (
+      {!loading && !erroreCarrello && items.length > 0 && (
         <>
           <Paper variant="outlined" sx={{ p: 2 }}>
             <Stack spacing={1.5} divider={<Divider flexItem />}>

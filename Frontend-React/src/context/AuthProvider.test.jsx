@@ -2,11 +2,14 @@ import { act, render, renderHook, screen, waitFor } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { useEffect } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { apiClient } from "../api/client.js";
+import { apiClient, impostaGestoreNonAutorizzato } from "../api/client.js";
 import { useAuth } from "../hooks/useAuth.js";
 import { AuthProvider } from "./AuthProvider.jsx";
 
-vi.mock("../api/client.js", () => ({ apiClient: { post: vi.fn() } }));
+vi.mock("../api/client.js", () => ({
+  apiClient: { post: vi.fn() },
+  impostaGestoreNonAutorizzato: vi.fn(),
+}));
 
 const utente = { id: 33, nome: "Mario", cognome: "Rossi", email: "mario@example.com", role: "USER" };
 const rispostaAuth = { token: "tok-123", user: utente };
@@ -93,6 +96,58 @@ describe("AuthProvider", () => {
     expect(result.current.isAuthenticated).toBe(false);
     expect(localStorage.getItem("token")).toBeNull();
     expect(localStorage.getItem("user")).toBeNull();
+  });
+
+  describe("sessione scaduta (il backend risponde 401 a una richiesta con token)", () => {
+    const sessioneSalvata = () => {
+      localStorage.setItem("token", "tok-scaduto");
+      localStorage.setItem("user", JSON.stringify(utente));
+    };
+
+    /** Il gestore che AuthProvider ha registrato presso il client HTTP. */
+    const gestoreRegistrato = () => impostaGestoreNonAutorizzato.mock.calls.at(-1)[0];
+
+    it("disconnette l'utente, svuota localStorage e ricorda il motivo", () => {
+      sessioneSalvata();
+      const { result } = renderHook(() => useAuth(), { wrapper });
+      expect(result.current.isAuthenticated).toBe(true);
+
+      act(() => gestoreRegistrato()());
+
+      expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.sessioneScaduta).toBe(true);
+      expect(localStorage.getItem("token")).toBeNull();
+      expect(localStorage.getItem("user")).toBeNull();
+    });
+
+    it("un logout volontario non è una sessione scaduta", () => {
+      sessioneSalvata();
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      act(() => result.current.logout());
+
+      expect(result.current.sessioneScaduta).toBe(false);
+    });
+
+    it("al login successivo l'avviso sparisce", async () => {
+      apiClient.post.mockResolvedValue(rispostaAuth);
+      sessioneSalvata();
+      const { result } = renderHook(() => useAuth(), { wrapper });
+      act(() => gestoreRegistrato()());
+
+      await act(() => result.current.login("mario@example.com", "secret"));
+
+      expect(result.current.sessioneScaduta).toBe(false);
+      expect(result.current.isAuthenticated).toBe(true);
+    });
+
+    it("smonta il gestore quando il provider scompare", () => {
+      const { unmount } = renderHook(() => useAuth(), { wrapper });
+
+      unmount();
+
+      expect(impostaGestoreNonAutorizzato).toHaveBeenLastCalledWith(null);
+    });
   });
 
   // Regressione di un bug trovato provando l'app: subito dopo il login, un

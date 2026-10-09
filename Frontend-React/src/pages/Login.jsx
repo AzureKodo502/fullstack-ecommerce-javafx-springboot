@@ -4,7 +4,7 @@ import { Alert, Button, Container, Paper, Stack, TextField, Typography } from "@
 import { useAuth } from "../hooks/useAuth.js";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, sessioneScaduta } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -41,6 +41,9 @@ export default function Login() {
           Accedi
         </Typography>
         <Stack spacing={2}>
+          {sessioneScaduta && !error && (
+            <Alert severity="info">La sessione è scaduta: accedi di nuovo per continuare.</Alert>
+          )}
           {error && <Alert severity="error">{error}</Alert>}
           <TextField
             label="Email"
