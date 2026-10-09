@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Alert, Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Button, Container, Link, Paper, Stack, TextField, Typography } from "@mui/material";
 import { useAuth } from "../hooks/useAuth.js";
+import { useTitoloPagina } from "../hooks/useTitoloPagina.js";
 
 const CAMPI_INIZIALI = { nome: "", cognome: "", email: "", password: "", confermaPassword: "" };
 
 export default function Registrazione() {
+  useTitoloPagina("Crea un account");
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -85,7 +88,10 @@ export default function Registrazione() {
             {loading ? "Registrazione in corso…" : "Registrati"}
           </Button>
           <Typography variant="body2" align="center">
-            Hai già un account? <RouterLink to="/login">Accedi</RouterLink>
+            Hai già un account?{" "}
+            <Link component={RouterLink} to="/login">
+              Accedi
+            </Link>
           </Typography>
         </Stack>
       </Paper>

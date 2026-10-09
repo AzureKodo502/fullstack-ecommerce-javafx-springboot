@@ -1,19 +1,21 @@
-import { useCallback, useReducer } from "react";
-import { apiClient } from "../api/client.js";
+import { useCallback, useEffect, useReducer } from "react";
+import { apiClient, impostaGestoreNonAutorizzato } from "../api/client.js";
 import { AuthContext } from "./AuthContext.js";
 
 const TOKEN_KEY = "token"; // stessa chiave che api/client.js legge per allegare l'header
 const USER_KEY = "user";
+
+const STATO_ANONIMO = { user: null, token: null, sessioneScaduta: false };
 
 function loadInitialState() {
   try {
     const token = localStorage.getItem(TOKEN_KEY);
     const rawUser = localStorage.getItem(USER_KEY);
     const user = rawUser ? JSON.parse(rawUser) : null;
-    return token && user ? { user, token } : { user: null, token: null };
+    return token && user ? { ...STATO_ANONIMO, user, token } : STATO_ANONIMO;
   } catch {
     // localStorage non disponibile (es. modalità privata restrittiva): si parte sloggati.
-    return { user: null, token: null };
+    return STATO_ANONIMO;
   }
 }
 
@@ -34,9 +36,12 @@ function persist(state) {
 function reducer(_state, action) {
   switch (action.type) {
     case "AUTHENTICATED":
-      return { user: action.user, token: action.token };
+      return { user: action.user, token: action.token, sessioneScaduta: false };
     case "LOGGED_OUT":
-      return { user: null, token: null };
+      return STATO_ANONIMO;
+    case "SESSION_EXPIRED":
+      // Come il logout, ma ricorda il motivo: la pagina di login lo spiega.
+      return { ...STATO_ANONIMO, sessioneScaduta: true };
     default:
       throw new Error(`Azione sconosciuta: ${action.type}`);
   }
@@ -80,9 +85,21 @@ export function AuthProvider({ children }) {
     dispatch({ type: "LOGGED_OUT" });
   }, []);
 
+  // Se il backend rifiuta con 401 una richiesta autenticata, il token è scaduto
+  // (dura 24h): si disconnette l'utente invece di lasciare l'interfaccia
+  // "loggata" con ogni chiamata che fallisce.
+  useEffect(() => {
+    impostaGestoreNonAutorizzato(() => {
+      persist({ token: null, user: null });
+      dispatch({ type: "SESSION_EXPIRED" });
+    });
+    return () => impostaGestoreNonAutorizzato(null);
+  }, []);
+
   const value = {
     user: state.user,
     token: state.token,
+    sessioneScaduta: state.sessioneScaduta,
     isAuthenticated: Boolean(state.user),
     login,
     register,

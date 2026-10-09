@@ -14,6 +14,7 @@ import {
 import ScarpaCard from "../components/ScarpaCard.jsx";
 import { useMarchi } from "../hooks/useMarchi.js";
 import { useScarpe } from "../hooks/useScarpe.js";
+import { useTitoloPagina } from "../hooks/useTitoloPagina.js";
 
 /**
  * Catalogo con ricerca per nome e filtro per marchio. I filtri vivono
@@ -21,6 +22,8 @@ import { useScarpe } from "../hooks/useScarpe.js";
  * tasto "indietro" del browser torna alla ricerca precedente.
  */
 export default function Catalogo() {
+  useTitoloPagina("Catalogo");
+
   const [params, setParams] = useSearchParams();
   const q = params.get("q") ?? "";
   const marchio = params.get("marchio") ?? "";
@@ -96,7 +99,7 @@ export default function Catalogo() {
 
       {error && (
         <Alert severity="error">
-          Impossibile caricare il catalogo. Il server è raggiungibile? ({error.message})
+          Impossibile caricare il catalogo. {error.message}
         </Alert>
       )}
 

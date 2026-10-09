@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
-import { Alert, Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Button, Container, Link, Paper, Stack, TextField, Typography } from "@mui/material";
 import { useAuth } from "../hooks/useAuth.js";
+import { useTitoloPagina } from "../hooks/useTitoloPagina.js";
 
 export default function Login() {
-  const { login } = useAuth();
+  useTitoloPagina("Accedi");
+
+  const { login, sessioneScaduta } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -41,6 +44,9 @@ export default function Login() {
           Accedi
         </Typography>
         <Stack spacing={2}>
+          {sessioneScaduta && !error && (
+            <Alert severity="info">La sessione è scaduta: accedi di nuovo per continuare.</Alert>
+          )}
           {error && <Alert severity="error">{error}</Alert>}
           <TextField
             label="Email"
@@ -64,7 +70,10 @@ export default function Login() {
             {loading ? "Accesso in corso…" : "Accedi"}
           </Button>
           <Typography variant="body2" align="center">
-            Non hai un account? <RouterLink to="/registrazione">Registrati</RouterLink>
+            Non hai un account?{" "}
+            <Link component={RouterLink} to="/registrazione">
+              Registrati
+            </Link>
           </Typography>
         </Stack>
       </Paper>

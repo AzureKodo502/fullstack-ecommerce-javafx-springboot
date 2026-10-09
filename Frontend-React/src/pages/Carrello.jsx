@@ -14,8 +14,11 @@ import {
 import { formatPrezzo, imageSrc } from "../api/products.js";
 import { useCart } from "../hooks/useCart.js";
 import { subtotaleRiga } from "../utils/carrello.js";
+import { useTitoloPagina } from "../hooks/useTitoloPagina.js";
 
 export default function Carrello() {
+  useTitoloPagina("Il tuo carrello");
+
   const { items, loading, error, totale, rimuovi } = useCart();
   const [rimozioneInCorso, setRimozioneInCorso] = useState(null);
   const [erroreRimozione, setErroreRimozione] = useState(null);
@@ -44,7 +47,7 @@ export default function Carrello() {
         </Box>
       )}
 
-      {error && <Alert severity="error">Impossibile caricare il carrello. ({error.message})</Alert>}
+      {error && <Alert severity="error">Impossibile caricare il carrello. {error.message}</Alert>}
       {erroreRimozione && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {erroreRimozione}
