@@ -1,0 +1,54 @@
+name: Frontend CI
+
+# Parte solo se cambia il frontend React (o questo workflow): una PR che tocca
+# solo il backend non rifà girare npm, e viceversa per ci.yml.
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Frontend-React/**'
+      - '.github/workflows/frontend.yml'
+  pull_request:
+    paths:
+      - 'Frontend-React/**'
+      - '.github/workflows/frontend.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend · lint, test & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Frontend-React
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: Frontend-React/package-lock.json
+
+      # npm ci installa esattamente ciò che dice package-lock.json e fallisce se
+      # il lockfile non è allineato a package.json (npm install lo riscriverebbe).
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build

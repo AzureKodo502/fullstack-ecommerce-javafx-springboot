@@ -1,9 +1,17 @@
 name: CI
 
+# Parte solo se cambia il backend (o questo workflow). Il frontend React ha il
+# suo in frontend.yml.
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/ci.yml'
   pull_request:
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/ci.yml'
 
 permissions:
   contents: read
