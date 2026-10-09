@@ -15,6 +15,7 @@ import { effettuaCheckout } from "../api/orders.js";
 import { formatPrezzo } from "../api/products.js";
 import { useAuth } from "../hooks/useAuth.js";
 import { useCart } from "../hooks/useCart.js";
+import { useTitoloPagina } from "../hooks/useTitoloPagina.js";
 import { subtotaleRiga } from "../utils/carrello.js";
 
 export default function Checkout() {
@@ -23,6 +24,8 @@ export default function Checkout() {
   const [inCorso, setInCorso] = useState(false);
   const [errore, setErrore] = useState(null);
   const [ordine, setOrdine] = useState(null);
+
+  useTitoloPagina(ordine ? "Ordine confermato" : "Riepilogo ordine");
 
   async function handleConferma() {
     setErrore(null);
@@ -79,7 +82,7 @@ export default function Checkout() {
 
       {/* Se il carrello non si carica NON si può dire che è vuoto: sarebbe falso. */}
       {!loading && erroreCarrello && (
-        <Alert severity="error">Impossibile caricare il carrello. ({erroreCarrello.message})</Alert>
+        <Alert severity="error">Impossibile caricare il carrello. {erroreCarrello.message}</Alert>
       )}
 
       {!loading && !erroreCarrello && items.length === 0 && (

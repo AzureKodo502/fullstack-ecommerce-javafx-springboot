@@ -13,8 +13,11 @@ import {
 import { formatPrezzo } from "../api/products.js";
 import { useOrdini } from "../hooks/useOrdini.js";
 import { formatDataOra } from "../utils/formato.js";
+import { useTitoloPagina } from "../hooks/useTitoloPagina.js";
 
 export default function Ordini() {
+  useTitoloPagina("I miei ordini");
+
   const { data: ordini, loading, error } = useOrdini();
 
   // Dal più recente: le date ISO si ordinano correttamente come stringhe.
@@ -32,7 +35,7 @@ export default function Ordini() {
         </Box>
       )}
 
-      {error && <Alert severity="error">Impossibile caricare gli ordini. ({error.message})</Alert>}
+      {error && <Alert severity="error">Impossibile caricare gli ordini. {error.message}</Alert>}
 
       {!loading && !error && recenti.length === 0 && (
         <Stack spacing={2} sx={{ alignItems: "flex-start" }}>

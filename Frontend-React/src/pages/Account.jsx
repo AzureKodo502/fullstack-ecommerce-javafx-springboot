@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button, Container, Paper, Stack, Typography } from "@mui/material";
 import { useAuth } from "../hooks/useAuth.js";
+import { useTitoloPagina } from "../hooks/useTitoloPagina.js";
 
 /**
  * Prima pagina protetta dell'app: dimostra che login/registrazione, il
@@ -8,6 +9,8 @@ import { useAuth } from "../hooks/useAuth.js";
  * Ordini (Fasi 4-5) saranno protetti allo stesso modo.
  */
 export default function Account() {
+  useTitoloPagina("Il mio account");
+
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 

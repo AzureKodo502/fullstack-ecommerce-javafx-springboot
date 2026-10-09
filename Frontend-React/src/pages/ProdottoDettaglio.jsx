@@ -8,14 +8,13 @@ import {
   Container,
   Snackbar,
   Stack,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { TAGLIE, formatPrezzo, imageSrc } from "../api/products.js";
 import { useAuth } from "../hooks/useAuth.js";
 import { useCart } from "../hooks/useCart.js";
 import { useScarpa } from "../hooks/useScarpa.js";
+import { useTitoloPagina } from "../hooks/useTitoloPagina.js";
 
 export default function ProdottoDettaglio() {
   const { id } = useParams();
@@ -29,6 +28,8 @@ export default function ProdottoDettaglio() {
   const [inCorso, setInCorso] = useState(false);
   const [erroreCarrello, setErroreCarrello] = useState(null);
   const [aggiunto, setAggiunto] = useState(false);
+
+  useTitoloPagina(scarpa?.nome ?? "Prodotto");
 
   async function handleAggiungi() {
     // Il carrello è per utente: da sloggati si passa dal login e si torna qui.
@@ -70,7 +71,7 @@ export default function ProdottoDettaglio() {
         <Alert severity={error.status === 404 ? "warning" : "error"}>
           {error.status === 404
             ? "Questa scarpa non esiste (o non è più a catalogo)."
-            : `Impossibile caricare la scarpa. (${error.message})`}
+            : `Impossibile caricare la scarpa. ${error.message}`}
         </Alert>
       </Container>
     );
@@ -110,19 +111,20 @@ export default function ProdottoDettaglio() {
             <Typography variant="subtitle2" gutterBottom>
               Taglia
             </Typography>
-            <ToggleButtonGroup
-              exclusive
-              value={taglia}
-              onChange={(_, nuova) => setTaglia(nuova)}
-              size="small"
-              sx={{ flexWrap: "wrap", gap: 1 }}
-            >
+            <Stack direction="row" role="group" aria-label="Taglia" useFlexGap sx={{ flexWrap: "wrap", gap: 1 }}>
               {TAGLIE.map((t) => (
-                <ToggleButton key={t} value={t} sx={{ border: 1, borderColor: "divider" }}>
+                <Button
+                  key={t}
+                  size="small"
+                  variant={taglia === t ? "contained" : "outlined"}
+                  aria-pressed={taglia === t}
+                  onClick={() => setTaglia(t)}
+                  sx={{ minWidth: 44 }}
+                >
                   {t}
-                </ToggleButton>
+                </Button>
               ))}
-            </ToggleButtonGroup>
+            </Stack>
           </Box>
 
           {erroreCarrello && <Alert severity="error">{erroreCarrello}</Alert>}
